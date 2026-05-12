@@ -2,7 +2,9 @@ MEMERANK - a meme ranking website for uploding and rating diffrent memes online
 
 Features
 Landing page — live top 10 leaderboard with meme thumbnails, medals for top 3, and average scores
+
 Rank mode — shows random unrated memes one at a time, rate 1–10, no repeats per session
+
 Upload mode — drag and drop meme upload with optional title
 
 AWS services used:
