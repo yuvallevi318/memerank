@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MemeRank — Upload</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e0e;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --yellow: #f5c518;
+    --yellow-dim: #f5c51822;
+    --yellow-border: #f5c51855;
+    --text: #f0f0f0;
+    --muted: #888;
+    --green: #22c55e;
+    --green-dim: #22c55e18;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .top-bar {
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .back-btn {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.15s;
+  }
+
+  .back-btn:hover { color: var(--text); }
+
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.06em;
+    color: var(--yellow);
+  }
+
+  .spacer { width: 60px; }
+
+  .upload-card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .drop-zone {
+    width: 100%;
+    aspect-ratio: 4/3;
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    margin: 1.25rem;
+    width: calc(100% - 2.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--yellow-border);
+    background: var(--yellow-dim);
+  }
+
+  .drop-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .drop-icon { font-size: 3rem; line-height: 1; }
+
+  .drop-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .drop-sub {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: absolute;
+    inset: 0;
+    display: none;
+    background: var(--surface2);
+  }
+
+  .form-section {
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  .field-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .field-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .field-input:focus { border-color: var(--yellow-border); }
+  .field-input::placeholder { color: var(--muted); }
+
+  .file-info {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .file-info.visible { display: flex; }
+
+  .file-info .file-icon { font-size: 1.5rem; }
+
+  .file-info .file-details { flex: 1; min-width: 0; }
+
+  .file-info .file-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .file-info .file-size {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .file-info .remove-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.15s;
+  }
+
+  .file-info .remove-btn:hover { color: var(--text); }
+
+  .upload-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--yellow);
+    border: none;
+    border-radius: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.08em;
+    color: #0e0e0e;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    margin-top: 1rem;
+  }
+
+  .upload-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .upload-btn:not(:disabled):hover { opacity: 0.88; }
+  .upload-btn:not(:disabled):active { transform: scale(0.99); }
+
+  .success-banner {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--green-dim);
+    border: 1px solid var(--green);
+    border-radius: 12px;
+    margin-top: 1rem;
+    color: var(--green);
+    font-size: 0.9rem;
+    font-weight: 500;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .success-banner.visible { display: flex; }
+  .success-banner .icon { font-size: 1.3rem; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-btn" href="index.html">← Back</a>
+  <span class="page-title">Upload</span>
+  <span class="spacer"></span>
+</div>
+
+<div class="upload-card">
+  <div class="drop-zone" id="drop-zone">
+    <input type="file" id="file-input" accept="image/*" onchange="handleFile(this.files[0])">
+    <img class="preview-img" id="preview-img" alt="Preview">
+    <span class="drop-icon">🖼️</span>
+    <span class="drop-text">Drop your meme here</span>
+    <span class="drop-sub">JPG, PNG, GIF, WEBP — max 5MB</span>
+  </div>
+
+  <div class="form-section">
+    <div class="file-info" id="file-info">
+      <span class="file-icon">📁</span>
+      <div class="file-details">
+        <div class="file-name" id="file-name">—</div>
+        <div class="file-size" id="file-size">—</div>
+      </div>
+      <button class="remove-btn" onclick="removeFile()">✕</button>
+    </div>
+
+    <label class="field-label" for="meme-title">Meme title (optional)</label>
+    <input
+      class="field-input"
+      id="meme-title"
+      type="text"
+      placeholder="e.g. distracted boyfriend"
+      maxlength="60"
+    >
+
+    <button class="upload-btn" id="upload-btn" disabled onclick="uploadMeme()">
+      Upload Meme
+    </button>
+  </div>
+</div>
+
+<div class="success-banner" id="success-banner">
+  <span class="icon">✅</span>
+  Your meme is in the pool — may the best meme win
+</div>
+
+<script>
+  const API = "https://kwb9znuudb.execute-api.us-east-1.amazonaws.com";
+  let selectedFile = null;
+
+  function handleFile(file) {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File too large — max 5MB');
+      return;
+    }
+
+    selectedFile = file;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById('preview-img');
+      img.src = e.target.result;
+      img.style.display = 'block';
+      document.querySelector('.drop-icon').style.display = 'none';
+      document.querySelector('.drop-text').style.display = 'none';
+      document.querySelector('.drop-sub').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('file-size').textContent = (file.size / 1024).toFixed(1) + ' KB';
+    document.getElementById('file-info').classList.add('visible');
+    document.getElementById('upload-btn').disabled = false;
+  }
+
+  function removeFile() {
+    selectedFile = null;
+    document.getElementById('file-input').value = '';
+    document.getElementById('preview-img').style.display = 'none';
+    document.getElementById('preview-img').src = '';
+    document.querySelector('.drop-icon').style.display = '';
+    document.querySelector('.drop-text').style.display = '';
+    document.querySelector('.drop-sub').style.display = '';
+    document.getElementById('file-info').classList.remove('visible');
+    document.getElementById('upload-btn').disabled = true;
+  }
+
+  async function uploadMeme() {
+    if (!selectedFile) return;
+
+    const btn = document.getElementById('upload-btn');
+    btn.disabled = true;
+    btn.textContent = 'Uploading...';
+
+    // 1. Get presigned URL from Lambda
+    const { uploadUrl, memeId, s3Key } = await fetch(
+      `${API}/upload-url?fileName=${encodeURIComponent(selectedFile.name)}`
+    ).then(r => r.json());
+
+    // 2. Upload directly to S3
+    await fetch(uploadUrl, {
+      method: "PUT",
+      body: selectedFile,
+      headers: { "Content-Type": selectedFile.type },
+    });
+
+    // 3. Confirm upload — save to DynamoDB
+    await fetch(`${API}/confirm-upload`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        memeId,
+        s3Key,
+        fileName: document.getElementById('meme-title').value || selectedFile.name,
+      }),
+    });
+
+    btn.textContent = 'Upload Meme';
+    document.getElementById('success-banner').classList.add('visible');
+    removeFile();
+    document.getElementById('meme-title').value = '';
+  }
+
+  // Drag and drop
+  const zone = document.getElementById('drop-zone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+</script>
+
+</body>
+</html>
