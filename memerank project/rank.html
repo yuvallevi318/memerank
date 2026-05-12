@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MemeRank — Rank</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --bg: #0e0e0e; --surface: #1a1a1a; --surface2: #242424; --border: #2e2e2e; --yellow: #f5c518; --yellow-dim: #f5c51822; --text: #f0f0f0; --muted: #888; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem 4rem; }
+  .top-bar { width: 100%; max-width: 560px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
+  .back-btn { color: var(--muted); text-decoration: none; font-size: 0.875rem; transition: color 0.15s; }
+  .back-btn:hover { color: var(--text); }
+  .page-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.06em; color: var(--yellow); }
+  .counter { font-size: 0.85rem; color: var(--muted); }
+  .meme-card { width: 100%; max-width: 560px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 1.5rem; }
+  .meme-image-wrap { width: 100%; aspect-ratio: 4/3; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .meme-image-wrap img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  .meme-placeholder { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: var(--muted); }
+  .meme-placeholder .emoji { font-size: 4rem; }
+  .meme-placeholder p { font-size: 0.8rem; }
+  .meme-meta { padding: 0.875rem 1.25rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .meme-name { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }
+  .meme-votes { font-size: 0.8rem; color: var(--muted); }
+  .rating-section { width: 100%; max-width: 560px; }
+  .rating-label { text-align: center; font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  .rating-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.6rem; margin-bottom: 1rem; }
+  .rating-btn { aspect-ratio: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: var(--text); font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; cursor: pointer; transition: background 0.15s, border-color 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; }
+  .rating-btn:hover { border-color: var(--yellow); background: var(--yellow-dim); }
+  .rating-btn.selected { background: var(--yellow); border-color: var(--yellow); color: #0e0e0e; transform: scale(1.08); }
+  .rating-btn:active { transform: scale(0.95); }
+  .submit-btn { width: 100%; padding: 1rem; background: var(--yellow); border: none; border-radius: 12px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.08em; color: #0e0e0e; cursor: pointer; transition: opacity 0.15s; margin-top: 0.25rem; }
+  .submit-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .submit-btn:not(:disabled):hover { opacity: 0.88; }
+  .skip-btn { display: block; text-align: center; margin-top: 1rem; color: var(--muted); font-size: 0.85rem; cursor: pointer; background: none; border: none; width: 100%; transition: color 0.15s; }
+  .skip-btn:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="back-btn" href="index.html">← Back</a>
+  <span class="page-title">Rate It</span>
+  <span class="counter" id="counter">0 rated</span>
+</div>
+
+<div class="meme-card" id="meme-card">
+  <div class="meme-image-wrap">
+    <img id="meme-img" src="" alt="meme" style="display:none;">
+    <div class="meme-placeholder" id="meme-placeholder">
+      <span class="emoji">🖼️</span>
+      <p id="placeholder-text">Loading meme...</p>
+    </div>
+  </div>
+  <div class="meme-meta">
+    <span class="meme-name" id="meme-name">loading...</span>
+    <span class="meme-votes" id="meme-votes">— votes</span>
+  </div>
+</div>
+
+<div class="rating-section">
+  <p class="rating-label">How hard did you laugh?</p>
+  <div class="rating-grid" id="rating-grid">
+    <button class="rating-btn" onclick="selectRating(1)">1</button>
+    <button class="rating-btn" onclick="selectRating(2)">2</button>
+    <button class="rating-btn" onclick="selectRating(3)">3</button>
+    <button class="rating-btn" onclick="selectRating(4)">4</button>
+    <button class="rating-btn" onclick="selectRating(5)">5</button>
+    <button class="rating-btn" onclick="selectRating(6)">6</button>
+    <button class="rating-btn" onclick="selectRating(7)">7</button>
+    <button class="rating-btn" onclick="selectRating(8)">8</button>
+    <button class="rating-btn" onclick="selectRating(9)">9</button>
+    <button class="rating-btn" onclick="selectRating(10)">10</button>
+  </div>
+  <button class="submit-btn" id="submit-btn" disabled onclick="submitRating()">Submit Rating</button>
+  <button class="skip-btn" onclick="loadNextMeme()">Skip this meme →</button>
+</div>
+
+<script>
+  const API = "https://kwb9znuudb.execute-api.us-east-1.amazonaws.com";
+  const S3_BASE = "https://s3-mr.s3.amazonaws.com";
+  let selectedRating = null;
+  let ratedCount = 0;
+  let currentMemeId = null;
+
+  function getSessionId() {
+    let id = localStorage.getItem('memeSessionId');
+    if (!id) {
+      id = 'sess-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
+      localStorage.setItem('memeSessionId', id);
+    }
+    return id;
+  }
+
+  function selectRating(val) {
+    selectedRating = val;
+    document.querySelectorAll('.rating-btn').forEach((btn, i) => {
+      btn.classList.toggle('selected', i + 1 === val);
+    });
+    document.getElementById('submit-btn').disabled = false;
+  }
+
+  async function submitRating() {
+    if (!selectedRating || !currentMemeId) return;
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    try {
+      await fetch(API + '/rate', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ memeId: currentMemeId, rating: selectedRating, sessionId: getSessionId() }),
+      });
+      ratedCount++;
+      document.getElementById('counter').textContent = ratedCount + ' rated';
+    } catch(e) { console.error(e); }
+    btn.textContent = 'Submit Rating';
+    await loadNextMeme();
+  }
+
+  async function loadNextMeme() {
+    selectedRating = null;
+    document.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('submit-btn').textContent = 'Submit Rating';
+    try {
+      const res = await fetch(API + '/meme/random?sessionId=' + getSessionId());
+      const data = await res.json();
+      if (data.done) {
+        document.getElementById('meme-img').style.display = 'none';
+        document.getElementById('meme-placeholder').style.display = 'flex';
+        document.getElementById('placeholder-text').textContent = "You've rated everything!";
+        document.getElementById('meme-name').textContent = "All done!";
+        document.getElementById('meme-votes').textContent = "";
+        document.getElementById('rating-grid').style.opacity = "0.3";
+        return;
+      }
+      currentMemeId = data.memeId;
+      document.getElementById('meme-name').textContent = data.fileName;
+      document.getElementById('meme-votes').textContent = data.totalRatings + ' votes';
+      const img = document.getElementById('meme-img');
+      img.onload = function() {
+        img.style.display = 'block';
+        document.getElementById('meme-placeholder').style.display = 'none';
+      };
+      img.onerror = function() {
+        document.getElementById('placeholder-text').textContent = 'Could not load image';
+      };
+      img.src = S3_BASE + '/' + data.s3Key;
+    } catch(e) {
+      console.error(e);
+      document.getElementById('meme-name').textContent = 'Error loading meme';
+    }
+  }
+
+  loadNextMeme();
+</script>
+
+</body>
+</html>

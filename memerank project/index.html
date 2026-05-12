@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MemeRank</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e0e;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --yellow: #f5c518;
+    --yellow-dim: #f5c51822;
+    --text: #f0f0f0;
+    --muted: #888;
+    --gold: #f5c518;
+    --silver: #c0c0c0;
+    --bronze: #cd7f32;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeDown 0.5s ease both;
+  }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 10vw, 6rem);
+    letter-spacing: 0.04em;
+    color: var(--yellow);
+    line-height: 1;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+  }
+
+  .modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+    max-width: 560px;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+
+  .mode-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+
+  .mode-btn:hover {
+    border-color: var(--yellow);
+    background: var(--yellow-dim);
+    transform: translateY(-2px);
+  }
+
+  .mode-btn:active { transform: scale(0.98); }
+
+  .mode-btn .icon {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  .mode-btn strong {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .mode-btn span {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .scoreboard {
+    width: 100%;
+    max-width: 560px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+
+  .sb-title {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .sb-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .sb-row:last-child { border-bottom: none; }
+  .sb-row:hover { background: var(--surface2); }
+
+  .sb-medal {
+    font-size: 1.3rem;
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .sb-num {
+    font-size: 0.85rem;
+    color: var(--muted);
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .sb-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: var(--surface2);
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+
+  .sb-info { flex: 1; min-width: 0; }
+
+  .sb-info .name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sb-info .votes {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .sb-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+
+  .score-gold { color: var(--gold); }
+  .score-silver { color: var(--silver); }
+  .score-bronze { color: var(--bronze); }
+  .score-default { color: var(--muted); }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MemeRank</h1>
+  <p>Upload memes. Rate them. Let the internet decide.</p>
+</header>
+
+<div class="modes">
+  <a class="mode-btn" href="rank.html">
+    <span class="icon">⭐</span>
+    <strong>Rank Memes</strong>
+    <span>Rate random memes 1–10</span>
+  </a>
+  <a class="mode-btn" href="upload.html">
+    <span class="icon">📤</span>
+    <strong>Upload</strong>
+    <span>Drop your meme into the pool</span>
+  </a>
+</div>
+
+<div class="scoreboard">
+  <div class="sb-title">🏆 &nbsp;Leaderboard</div>
+  <div id="scoreboard-rows">
+    <div class="sb-row" style="justify-content:center;color:var(--muted);font-size:0.85rem;">Loading...</div>
+  </div>
+
+</div>
+
+<script>
+const API = "https://kwb9znuudb.execute-api.us-east-1.amazonaws.com";
+const S3_BASE = "https://s3-mr.s3.us-east-1.amazonaws.com";
+const MEDALS = ["🥇", "🥈", "🥉"];
+
+async function loadScoreboard() {
+  const { memes } = await fetch(`${API}/scoreboard`).then(r => r.json());
+  const board = document.getElementById('scoreboard-rows');
+
+  if (!memes.length) {
+    board.innerHTML = `<div class="sb-row" style="justify-content:center;color:var(--muted);font-size:0.85rem;">No memes yet — be the first to upload!</div>`;
+    return;
+  }
+
+  board.innerHTML = memes.map((meme, i) => {
+    const scoreClass = i === 0 ? "score-gold" : i === 1 ? "score-silver" : i === 2 ? "score-bronze" : "score-default";
+    const rank = i < 3
+      ? `<span class="sb-medal">${MEDALS[i]}</span>`
+      : `<span class="sb-num">${i + 1}</span>`;
+    return `
+      <div class="sb-row">
+        ${rank}
+        <div class="sb-thumb" style="background:url(${S3_BASE}/${meme.s3Key}) center/cover;"></div>
+        <div class="sb-info">
+          <div class="name">${meme.fileName}</div>
+          <div class="votes">${meme.totalRatings} votes</div>
+        </div>
+        <span class="sb-score ${scoreClass}">${meme.averageScore}</span>
+      </div>`;
+  }).join("");
+}
+
+loadScoreboard();
+</script>
+
+</body>
+</html>
